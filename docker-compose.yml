@@ -1,0 +1,71 @@
+version: '3.1'
+
+services:
+  access:
+    image: accessos/access:${VERSION:?err}
+    env_file: ./docker.env
+    expose:
+      - "3000"
+    networks:
+      - proxy-network
+      - db-network
+    depends_on:
+      - db
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=self-hosted_proxy-network"
+      - "traefik.http.routers.access.rule=Host(`${DOMAIN:?err}`)"
+      - "traefik.http.services.access.loadbalancer.server.port=3000"
+      - "traefik.http.services.access.loadbalancer.sticky=true"
+      - "traefik.http.routers.access.entrypoints=websecure"
+      - "traefik.http.routers.access.tls.certresolver=myresolver"
+      - "traefik.http.routers.access.service=access"
+
+  worker:
+    image: accessos/worker:${VERSION:?err}
+    env_file: ./docker.env
+    networks:
+      - db-network
+    depends_on:
+      - db
+  db:
+    image: postgres:15.0
+    restart: always
+    volumes:
+      - data:/var/lib/postgresql/data
+    env_file: ./docker.env
+    ports:
+      - "5432:5432"
+    networks:
+      - db-network
+  traefik:
+    image: "traefik:v2.9"
+    container_name: "traefik"
+    command:
+      # Turn this on to debug TLS certificate issues
+      # - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.email=${EMAIL:?err}"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    env_file: ./docker.env
+    networks:
+      - proxy-network
+    ports:
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - "./letsencrypt:/letsencrypt"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+networks:
+  db-network:
+  proxy-network:
+
+volumes:
+  data:
+  https-portal-data:
+  letsencrypt:
