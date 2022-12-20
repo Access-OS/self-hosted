@@ -2,21 +2,21 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: access
-  name: access 
+    app: accessos
+  name: accessos
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: access 
+      app: accessos
   template:
     metadata:
       labels:
-        app: access
+        app: accessos
     spec:
       serviceAccountName: accessos
       containers:
-      - name: access 
+      - name: accessos
         image: accessos/access:latest
         resources:
           limits:
@@ -57,21 +57,19 @@ spec:
         - name: DATABASE_URL
           value: "postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)"
 
+# TODO(reginald): remove this
 ---
 apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: access
-  name: access
+    app: accessos
+  name: accessos
 spec:
-  type: LoadBalancer
+  type: NodePort
   ports:
-  - name: access
+  - name: accessos
     port: 80
     targetPort: 3000
   selector:
-    app: access
-  # Used to preserve the client IP address
-  # https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
-  externalTrafficPolicy: Local
+    app: accessos
