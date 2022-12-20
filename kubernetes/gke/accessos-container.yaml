@@ -22,7 +22,7 @@ spec:
             memory: 2048M 
             cpu: "1"
           requests:
-            cpu: "1"
+            cpu: 400m 
             memory: 1024M
         ports:
         - containerPort: 3000 
@@ -51,6 +51,9 @@ spec:
               name: accessos-secrets
               key: google-client-secret
         - name: GOOGLE_OAUTH_REDIRECT_URL
+        # Derived Environment Variables
+        - name: DATABASE_URL
+          value: "postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)"
 
 ---
 apiVersion: v1
