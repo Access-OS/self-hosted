@@ -28,17 +28,32 @@ spec:
         ports:
         - containerPort: 3000 
         env:
+        # Set environment variables in accessos-secrets.yaml
         - name: POSTGRES_DB
-          value: accessos
+          valueFrom:
+            secretKeyRef:
+              name: accessos-secrets
+              key: postgres-database
         - name: POSTGRES_HOST
-          value: "10.32.16.3"
+          valueFrom:
+            secretKeyRef:
+              name: accessos-secrets
+              key: postgres-host
         - name: POSTGRES_PORT
-          value: "5432"
+          valueFrom:
+            secretKeyRef:
+              name: accessos-secrets
+              key: postgres-port
         - name: POSTGRES_USER
-          value: postgres 
-        # Derived Environment Variables
+          valueFrom:
+            secretKeyRef:
+              name: accessos-secrets
+              key: postgres-user
         - name: COOKIE_SECURE
-          value: "false"
+          valueFrom:
+            secretKeyRef:
+              name: accessos-secrets
+              key: cookie-secure
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
@@ -62,7 +77,7 @@ spec:
         - name: DATABASE_URL
           value: "postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)"
         - name: GOOGLE_OAUTH_REDIRECT_URL
-          value: "http://$(DOMAIN)/auth/callback"
+          value: "https://$(DOMAIN)/auth/callback"
 
 # TODO(reginald): remove this
 ---

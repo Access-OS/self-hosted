@@ -6,7 +6,11 @@ metadata:
 spec:
   acme:
     server: https://acme-v02.api.letsencrypt.org/directory
-    email: reginald@accessos.com # ❗ Replace this with your email address
+    email:
+      valueFrom:
+        secretKeyRef:
+          name: accessos-secrets
+          key: email
     privateKeySecretRef:
       name: letsencrypt-production
     solvers:
