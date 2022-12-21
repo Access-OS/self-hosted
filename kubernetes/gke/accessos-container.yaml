@@ -52,7 +52,7 @@ spec:
               name: accessos-secrets
               key: google-client-secret
         - name: GOOGLE_OAUTH_REDIRECT_URL
-          value: "https://gcp.accessos.com/auth/callback"
+          value: "https://gke.accessos.com/auth/callback"
         # Derived Environment Variables
         - name: DATABASE_URL
           value: "postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)"
