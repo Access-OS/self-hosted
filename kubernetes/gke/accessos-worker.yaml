@@ -1,0 +1,56 @@
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  labels:
+    app: worker 
+  name: worker 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: worker
+  template:
+    metadata:
+      labels:
+        app: worker
+    spec:
+      serviceAccountName: accessos
+      containers:
+      - name: worker 
+        image: accessos/worker:latest
+        resources:
+          limits:
+            memory: 2048M 
+            cpu: "1"
+          requests:
+            cpu: 400m 
+            memory: 1024M
+        env:
+        # Set environment variables in accessos-secrets.yaml
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: accessos-secrets
+              key: postgres-database
+        - name: POSTGRES_HOST
+          valueFrom:
+            secretKeyRef:
+              name: accessos-secrets
+              key: postgres-host
+        - name: POSTGRES_PORT
+          valueFrom:
+            secretKeyRef:
+              name: accessos-secrets
+              key: postgres-port
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: accessos-secrets
+              key: postgres-user
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: accessos-secrets
+              key: postgres-password
+        - name: DATABASE_URL
+          value: "postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)"

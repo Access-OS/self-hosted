@@ -1,0 +1,24 @@
+# ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: accessos-ingress
+  annotations:
+    # This tells Google Cloud to create an External Load Balancer to realize this Ingress
+    kubernetes.io/ingress.class: gce
+    # This enables HTTP connections from Internet clients
+    kubernetes.io/ingress.allow-http: "true"
+    # This tells Google Cloud to associate the External Load Balancer with the static IP which we created earlier
+    kubernetes.io/ingress.global-static-ip-name: accessos-ip
+    cert-manager.io/issuer: letsencrypt-production
+spec:
+  tls:
+    - secretName: accessos-tls-secrets
+      hosts:
+        # This should be the same value as the domain secret you defined in ./accessos-secrets.yaml
+        - "{YOUR-DOMAIN-HERE}"
+  defaultBackend:
+    service:
+      name: accessos
+      port:
+        number: 3000

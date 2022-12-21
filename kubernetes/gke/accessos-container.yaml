@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: accessos
+  name: accessos
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: accessos
+  template:
+    metadata:
+      labels:
+        app: accessos
+    spec:
+      serviceAccountName: accessos
+      containers:
+      - name: accessos
+        image: accessos/access:latest
+        resources:
+          limits:
+            memory: 2048M 
+            cpu: "1"
+          requests:
+            cpu: 400m 
+            memory: 1024M
+        ports:
+        - containerPort: 3000 
+        env:
+        # Set environment variables in accessos-secrets.yaml
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: accessos-secrets
+              key: postgres-database
+        - name: POSTGRES_HOST
+          valueFrom:
+            secretKeyRef:
+              name: accessos-secrets
+              key: postgres-host
+        - name: POSTGRES_PORT
+          valueFrom:
+            secretKeyRef:
+              name: accessos-secrets
+              key: postgres-port
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: accessos-secrets
+              key: postgres-user
+        - name: COOKIE_SECURE
+          valueFrom:
+            secretKeyRef:
+              name: accessos-secrets
+              key: cookie-secure
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: accessos-secrets
+              key: postgres-password
+        - name: GOOGLE_OAUTH_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: accessos-secrets
+              key: google-client-id
+        - name: GOOGLE_OAUTH_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: accessos-secrets
+              key: google-client-secret
+        - name: DOMAIN
+          valueFrom:
+            secretKeyRef:
+              name: accessos-secrets
+              key: domain
+        - name: DATABASE_URL
+          value: "postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)"
+        - name: GOOGLE_OAUTH_REDIRECT_URL
+          value: "https://$(DOMAIN)/auth/callback"
+
+# TODO(reginald): remove this
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: accessos
+  name: accessos
+spec:
+  type: NodePort
+  ports:
+  - name: "3000"
+    port: 3000
+    targetPort: 3000
+  selector:
+    app: accessos
