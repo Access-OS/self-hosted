@@ -13,7 +13,7 @@ metadata:
     cert-manager.io/issuer: letsencrypt-staging
 spec:
   tls:
-    - secretName: accessos-secrets
+    - secretName: accessos-tls-secrets
       hosts:
         - gke.accessos.com
   defaultBackend:
