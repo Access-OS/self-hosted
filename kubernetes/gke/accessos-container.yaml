@@ -36,6 +36,9 @@ spec:
           value: "5432"
         - name: POSTGRES_USER
           value: postgres 
+        # Derived Environment Variables
+        - name: COOKIE_SECURE
+          value: "false"
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
@@ -51,7 +54,6 @@ spec:
             secretKeyRef:
               name: accessos-secrets
               key: google-client-secret
-        # Derived Environment Variables
         - name: DOMAIN
           valueFrom:
             secretKeyRef:
