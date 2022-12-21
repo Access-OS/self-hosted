@@ -16,7 +16,7 @@ spec:
     - secretName: accessos-tls-secrets
       hosts:
         # This should be the same value as the domain secret you defined in ./accessos-secrets.yaml
-        - "{YOUR-HOST-HERE}" 
+        - "accessos.reginald.xyz"
   defaultBackend:
     service:
       name: accessos
