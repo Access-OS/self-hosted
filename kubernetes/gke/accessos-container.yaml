@@ -51,11 +51,16 @@ spec:
             secretKeyRef:
               name: accessos-secrets
               key: google-client-secret
-        - name: GOOGLE_OAUTH_REDIRECT_URL
-          value: "https://gke.accessos.com/auth/callback"
         # Derived Environment Variables
+        - name: DOMAIN
+          valueFrom:
+            secretKeyRef:
+              name: accessos-secrets
+              key: domain
         - name: DATABASE_URL
           value: "postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)"
+        - name: GOOGLE_OAUTH_REDIRECT_URL
+          value: "http://$(DOMAIN)/auth/callback"
 
 # TODO(reginald): remove this
 ---
