@@ -74,6 +74,16 @@ spec:
             secretKeyRef:
               name: accessos-secrets
               key: domain
+        - name: SLACK_BOT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: accessos-secrets
+              key: slack-bot-token
+        - name: SLACK_SIGNING_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: accessos-secrets
+              key: slack-signing-secret
         - name: DATABASE_URL
           value: "postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)"
         - name: GOOGLE_OAUTH_REDIRECT_URL
